@@ -1,0 +1,15 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: discovery-server
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  server:
+    wait-time-in-ms-when-sync-empty: 0 # 즉시 시작
+    # 2025.0.0 개선된 서버 설정
+    enable-self-preservation: false # 실시간 등록/해제 확인, 운영시에는 true(기본값)
