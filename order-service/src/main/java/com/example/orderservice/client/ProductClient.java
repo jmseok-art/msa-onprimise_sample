@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.example.common.dto.ProductDto;
 
 @FeignClient(
-   name = "product-service"
+   name = "product-service",
+   fallback = ProductClientFailback.class
 )
 public interface ProductClient {
-   @GetMapping({"/products"})
+   @GetMapping("/products")
    List<ProductDto> getProducts();
 }

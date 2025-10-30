@@ -4,8 +4,37 @@ server:
 spring:
   application:
     name: order-service
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
     
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      productClient: # 반드시 @FeignClient 의 name과 일치
+        registerHealthIndicator: true # actuator에 노출
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10 # 10개의 요청 기준
+        minimumNumberOfCalls: 5 # 최소 요청 수 도달해야 상태 평가 시작
+        failureRateThreshold: 50 # 50% 이상 실패 시 OPEN 상태로 전환
+        waitDurationInOpenState: 5s # OPEN -> HALF_OPEN 대기 시간
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        recordExceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+        ignoreExceptions:
+          - com.example.common.exception.CustomValidationException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
