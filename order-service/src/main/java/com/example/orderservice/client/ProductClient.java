@@ -1,21 +1,15 @@
 package com.example.orderservice.client;
+import java.util.List;
 
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 
-@Component
-public class ProductClient {
+import com.example.common.dto.ProductDto;
 
-    private final RestTemplate restTemplate;
-
-    @Autowired
-    public ProductClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
-    public String getProductById(Long id) {
-        // NOTE: Assumes a load-balanced RestTemplate is configured in the application context
-        return restTemplate.getForObject("http://product-service/api/products/" + id, String.class);
-    }
+@FeignClient(
+   name = "product-service"
+)
+public interface ProductClient {
+   @GetMapping({"/products"})
+   List<ProductDto> getProducts();
 }

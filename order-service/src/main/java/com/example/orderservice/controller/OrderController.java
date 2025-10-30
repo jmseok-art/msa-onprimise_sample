@@ -1,37 +1,23 @@
 package com.example.orderservice.controller;
 
 import com.example.orderservice.client.ProductClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.example.common.dto.ProductDto;
+import java.util.List;
+import lombok.Generated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/orders")
 public class OrderController {
+   private final ProductClient productClient;
 
-    private final ProductClient productClient;
+   @GetMapping({"/orders/products"})
+   public List<ProductDto> getProductsFromProductService() {
+      return this.productClient.getProducts();
+   }
 
-    @Autowired
-    public OrderController(ProductClient productClient) {
-        this.productClient = productClient;
-    }
-
-    @GetMapping
-    public ResponseEntity<?> listOrders() {
-        // TODO: return list of orders (stub)
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getOrder(@PathVariable Long id) {
-        // TODO: return order by id (stub)
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody Object orderRequest) {
-        // Example: call product service to validate product availability
-        // productClient.getProductById(...)
-        return ResponseEntity.ok().build();
-    }
+   @Generated
+   public OrderController(ProductClient productClient) {
+      this.productClient = productClient;
+   }
 }
