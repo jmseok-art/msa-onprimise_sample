@@ -1,0 +1,16 @@
+server:
+    port: 8888
+
+spring:
+    application:
+        name: config-server
+
+    cloud:
+        config:
+            server:
+                git:
+                    uri: https://github.com/jmseok-art/msaconfig.git # ✅ Git 저장소 주소
+                    default-label: main # 기본 브랜치
+                    # 2025.0.0 개선 설정
+                    clone-on-start: true # 시작 시 즉시 Git 클론
+                    force-pull: true # 강제 풀로 최신 상태 유지
