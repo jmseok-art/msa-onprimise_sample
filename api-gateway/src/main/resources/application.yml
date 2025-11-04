@@ -11,10 +11,18 @@ spring:
           uri: lb://product-service
           predicates:
             - Path=/products/**
+          filters:
+            - JwtAuthorizationFilter
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/orders/**
+          filters:
+            - JwtAuthorizationFilter
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
 
 
 eureka:
