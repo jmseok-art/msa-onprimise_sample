@@ -28,19 +28,19 @@ public class UserDto implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).toList();
     }
 
     @Override
-    public String getPassword() {
-        return this.password;
+    public String getUsername() {
+        return mail;
     }
 
     @Override
-    public String getUsername() {
-        return this.mail;
+    public String getPassword() {
+        return password;
     }
+
 
     @RequiredArgsConstructor
     @Getter

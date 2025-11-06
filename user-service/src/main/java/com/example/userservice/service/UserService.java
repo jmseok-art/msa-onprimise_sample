@@ -1,44 +1,115 @@
 package com.example.userservice.service;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.userservice.dto.JwtDto;
 import com.example.userservice.dto.LoginDto;
+import com.example.userservice.dto.RefreshToken;
 import com.example.userservice.dto.SignUpDto;
 import com.example.userservice.dto.UserDto;
+import com.example.userservice.repository.RefreshTokenRepository;
 import com.example.userservice.repository.UserRepository;
 
-import lombok.RequiredArgsConstructor;
+import io.jsonwebtoken.Jwts;
 
 @Service
-@RequiredArgsConstructor
-public class UserService {
-
-    private final JwtService jwtService;
-
-    private final AuthenticationManager authenticationManager;
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    private final RefreshTokenRepository refreshTokenRepository;
+
     private final PasswordEncoder passwordEncoder;
 
-    public String login(LoginDto loginDto) {
+    private PrivateKey key;
+    
+    private final long ACCESS_TOKEN_EXPIRE_TIME; 
+
+    private final long REFRESH_TOKEN_EXPIRE_TIME; 
+
+
+    public UserService(@Value("${jwt.expire-time.access-token}") long accessTokenExpireTime,
+                      @Value("${jwt.expire-time.refresh-token}") long refreshTokenExpireTime,
+                      UserRepository userRepository,
+                      RefreshTokenRepository refreshTokenRepository) {
+        this.userRepository = userRepository;  
+        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.refreshTokenRepository = refreshTokenRepository;                 
+        this.ACCESS_TOKEN_EXPIRE_TIME = accessTokenExpireTime;
+        this.REFRESH_TOKEN_EXPIRE_TIME = refreshTokenExpireTime;
+        makeKey();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findById(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         
-       UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+    }
 
-
-        Authentication authentication =  authenticationManager.authenticate(authenticationToken);
-
-        String jwtToken = jwtService.generateToken(authentication);
-
-        return jwtToken;
+    public JwtDto login(LoginDto loginDto) {
         
+        UserDto userDto = userRepository.findById(loginDto.getEmail())
+            .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
+        
+        // 사용자가 입력한 비밀번호와 저장된 비밀번호 비교
+        if(!passwordEncoder.matches(loginDto.getPassword(), userDto.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 인증이 완료되면 JWT 토큰 생성
+        return generateToken(userDto);    
+    }
+
+    public String logout(UserDto userDto) {
+
+        // 저장된 리프레시 토큰 삭제
+        refreshTokenRepository.deleteById(userDto.getUsername());
+        return "Logout Success";
+    }
+
+    public JwtDto refresh(String refreshToken) {
+ 
+        // 리프레시 토큰에서 이메일 추출
+        String email = Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(refreshToken)
+                .getBody()
+                .getSubject()
+                .toString();
+        
+        // 저장된 리프레시 토큰과 일치하는지 확인
+        RefreshToken savedRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new RuntimeException("리프레시 토큰이 존재하지 않습니다."));
+        if(!savedRefreshToken.getToken().equals(refreshToken)) {
+            throw new RuntimeException("리프레시 토큰이 일치하지 않습니다.");
+        }
+
+        // 새로운 토큰 생성
+        return generateToken(
+            UserDto.builder()
+            .mail(savedRefreshToken.getEmail())
+            .roles(savedRefreshToken.getRoles().stream()
+                .map(UserDto.Role::valueOf)
+                .collect(Collectors.toSet()))
+            .build()
+        );
     }
 
     public String SignUp(SignUpDto signUpDto) {
@@ -53,4 +124,60 @@ public class UserService {
             
         return "SignUp Success";
     }
+
+    private void makeKey() {
+
+        try {
+            String privateKey = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("private_key_pkcs8.pem").toURI())));
+            privateKey = privateKey
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec keySpecPKCS8 = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
+            key = kf.generatePrivate(keySpecPKCS8);
+
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+    }
+    
+    private JwtDto generateToken(UserDto userDto) {
+
+        List<String> roles = userDto.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+        // accessToken 생성
+        String accessToken = Jwts.builder()
+                .setSubject(userDto.getUsername())
+                .claim("role", roles)
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
+                .signWith(key)
+                .compact();
+        
+        String refreshToken = Jwts.builder()
+                .setSubject(userDto.getUsername())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_TIME)) // 7일
+                .signWith(key)
+                .compact();
+
+        // RefreshToken Redis 저장
+        RefreshToken refreshTokens = RefreshToken.builder()
+            .email(userDto.getUsername())
+            .roles(roles)
+            .token(refreshToken)
+            .expiredTime(REFRESH_TOKEN_EXPIRE_TIME / 1000) // 초 단위로 저장
+            .build();
+
+        refreshTokenRepository.save(refreshTokens);
+
+
+        return JwtDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
+
+
 }
