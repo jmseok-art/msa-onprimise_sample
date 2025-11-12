@@ -1,12 +1,12 @@
 FROM gradle:8.5-jdk21 AS builder
 WORKDIR /workspace
 
-COPY ./gradlew .
+COPY ./gradlew ./
 COPY ./gradle ./gradle
 COPY ./settings.gradle ./
-COPY ./user-service/build.gradle user-service/
-COPY ./user-service/src user-service/src
-COPY ./gradle.properties .
+COPY ./user-service/ user-service/
+COPY ./common/ common/
+COPY ./gradle.properties ./
 
 RUN chmod +x ./gradlew
 
