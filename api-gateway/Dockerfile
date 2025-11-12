@@ -8,6 +8,8 @@ COPY ./api-gateway/build.gradle api-gateway/
 COPY ./api-gateway/src api-gateway/src
 RUN ./gradlew :api-gateway:bootJar --no-daemon
 
+RUN chmod +x ./gradlew
+
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=builder /workspace/api-gateway/build/libs/api-gateway.jar app.jar

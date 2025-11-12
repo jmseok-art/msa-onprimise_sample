@@ -7,6 +7,8 @@ COPY ./settings.gradle ./
 COPY ./user-service/build.gradle user-service/
 COPY ./user-service/src user-service/src
 
+RUN chmod +x ./gradlew
+
 RUN ./gradlew :user-service:bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre

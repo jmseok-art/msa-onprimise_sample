@@ -7,6 +7,8 @@ COPY ./settings.gradle ./
 COPY ./product-service/build.gradle product-service/
 COPY ./product-service/src product-service/src
 
+RUN chmod +x ./gradlew
+
 RUN ./gradlew :product-service:bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre
