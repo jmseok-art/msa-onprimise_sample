@@ -6,9 +6,10 @@ COPY ./gradle ./gradle
 COPY ./settings.gradle ./
 COPY ./api-gateway/build.gradle api-gateway/
 COPY ./api-gateway/src api-gateway/src
-RUN ./gradlew :api-gateway:bootJar --no-daemon
 
 RUN chmod +x ./gradlew
+RUN ./gradlew :api-gateway:bootJar --no-daemon
+
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
