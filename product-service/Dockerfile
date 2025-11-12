@@ -6,6 +6,7 @@ COPY ./gradle ./gradle
 COPY ./settings.gradle ./
 COPY ./product-service/build.gradle product-service/
 COPY ./product-service/src product-service/src
+COPY ./gradle.properties .
 
 RUN chmod +x ./gradlew
 

@@ -3,9 +3,10 @@ WORKDIR /workspace
 
 COPY ./gradlew .
 COPY ./gradle ./gradle
-COPY ./settings.gradle ./
+COPY ./settings.gradle .
 COPY ./api-gateway/build.gradle api-gateway/
 COPY ./api-gateway/src api-gateway/src
+COPY ./gradle.properties .
 
 RUN chmod +x ./gradlew
 RUN ./gradlew :api-gateway:bootJar --no-daemon
