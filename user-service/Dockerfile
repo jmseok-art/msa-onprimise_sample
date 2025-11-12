@@ -5,6 +5,7 @@ COPY ./gradlew ./
 COPY ./gradle ./gradle
 COPY ./settings.gradle ./
 COPY ./user-service/ user-service/
+COPY ./build.gradle ./build.gradle
 COPY ./common/ common/
 COPY ./gradle.properties ./
 
