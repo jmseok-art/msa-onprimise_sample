@@ -2,7 +2,7 @@ FROM gradle:8.5-jdk21 AS builder
 WORKDIR /workspace
 
 COPY ./gradlew ./
-COPY ./build.gradle ./build.gradle
+COPY ./build.gradle ./
 COPY ./gradle ./gradle
 COPY ./settings.gradle ./
 COPY ./api-gateway/ api-gateway/

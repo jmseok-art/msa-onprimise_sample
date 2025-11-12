@@ -4,7 +4,7 @@ WORKDIR /workspace
 COPY ./gradlew ./
 COPY ./gradle ./gradle
 COPY ./settings.gradle ./
-COPY ./build.gradle ./build.gradle
+COPY ./build.gradle ./
 COPY ./order-service/ order-service/
 COPY ./common/ common/
 COPY ./gradle.properties ./
