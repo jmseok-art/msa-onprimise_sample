@@ -44,7 +44,7 @@ public class UserController {
     
     @PostMapping("/users")
     public String signUp(@RequestBody SignUpDto signUpDto) {
-        return userService.SignUp(signUpDto);
+        return userService.signUp(signUpDto);
         
     }
 

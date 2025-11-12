@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 import com.example.common.security.filter.JwtAuthorizationFilter;
+import com.example.common.security.handler.ServiceAccessDeniedHandler;
 
 
 @Configuration
@@ -32,6 +33,9 @@ public class SecurityConfig {
                 .logout(LogoutConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(handler-> {
+                    handler.accessDeniedHandler(serviceAccessDeniedHandler());
+                })
                 .build();
         
     }
@@ -40,5 +44,10 @@ public class SecurityConfig {
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter();
     }
+
+    @Bean
+    public ServiceAccessDeniedHandler serviceAccessDeniedHandler() {
+        return new ServiceAccessDeniedHandler();
+    }   
     
 }
