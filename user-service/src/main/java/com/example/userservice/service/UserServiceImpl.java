@@ -1,7 +1,5 @@
 package com.example.userservice.service;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -46,6 +44,7 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(@Value("${jwt.expire-time.access-token}") long accessTokenExpireTime,
                       @Value("${jwt.expire-time.refresh-token}") long refreshTokenExpireTime,
+                      @Value("file:/keys/private_key_pkcs8.pem") String privateKey,
                       UserRepository userRepository,
                       RefreshTokenRepository refreshTokenRepository,
                       PasswordEncoder passwordEncoder) {
@@ -54,7 +53,7 @@ public class UserServiceImpl implements UserService {
         this.refreshTokenRepository = refreshTokenRepository;                 
         this.ACCESS_TOKEN_EXPIRE_TIME = accessTokenExpireTime;
         this.REFRESH_TOKEN_EXPIRE_TIME = refreshTokenExpireTime;
-        makeKey();
+        makeKey(privateKey);
     }
 
     @Override
@@ -128,10 +127,9 @@ public class UserServiceImpl implements UserService {
         return "SignUp Success";
     }
 
-    private void makeKey() {
+    private void makeKey(String privateKey) {
 
         try {
-            String privateKey = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("private_key_pkcs8.pem").toURI())));
             privateKey = privateKey
                 .replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
