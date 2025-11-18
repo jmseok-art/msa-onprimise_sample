@@ -14,7 +14,7 @@ public interface UserService extends UserDetailsService {
 
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    // 로그인 처리 및 토큰 발급 1
+    // 로그인 처리 및 토큰 발급 
     JwtDto login(LoginDto loginDto);
 
     // 로그아웃 처리 (리프레시 토큰 제거 등)
