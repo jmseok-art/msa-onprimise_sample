@@ -32,6 +32,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // 로그인 처리 및 토큰 발급
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginDto request) {
         
