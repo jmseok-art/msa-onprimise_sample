@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(@Value("${jwt.expire-time.access-token}") long accessTokenExpireTime,
                       @Value("${jwt.expire-time.refresh-token}") long refreshTokenExpireTime,
-                      @Value("file:/keys/private_key_pkcs8.pem") String privateKey,
+                      @Value("${KEY_PATH}") String privateKey,
                       UserRepository userRepository,
                       RefreshTokenRepository refreshTokenRepository,
                       PasswordEncoder passwordEncoder) {
