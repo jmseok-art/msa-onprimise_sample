@@ -25,8 +25,10 @@ import com.example.userservice.repository.RefreshTokenRepository;
 import com.example.userservice.repository.UserRepository;
 
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -130,6 +132,8 @@ public class UserServiceImpl implements UserService {
     private void makeKey(String privateKey) {
 
         try {
+
+            log.info("Private Key before processing: {}", privateKey);
             privateKey = privateKey
                 .replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
