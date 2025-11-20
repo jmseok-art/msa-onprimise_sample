@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -48,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(@Value("${jwt.expire-time.access-token}") long accessTokenExpireTime,
                       @Value("${jwt.expire-time.refresh-token}") long refreshTokenExpireTime,
-                      @Value("file:/app/secret/private_key_pkcs8.pem") Resource privateKey,
+                      @Value("${PREVATE_KEY}") String privateKey,
                       UserRepository userRepository,
                       RefreshTokenRepository refreshTokenRepository,
                       PasswordEncoder passwordEncoder) throws IOException {
@@ -57,7 +56,7 @@ public class UserServiceImpl implements UserService {
         this.refreshTokenRepository = refreshTokenRepository;                 
         this.ACCESS_TOKEN_EXPIRE_TIME = accessTokenExpireTime;
         this.REFRESH_TOKEN_EXPIRE_TIME = refreshTokenExpireTime;
-        makeKey(new String(privateKey.getInputStream().readAllBytes()));
+        makeKey(privateKey);
     }
     
     @Override

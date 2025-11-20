@@ -26,6 +26,7 @@ public class OrderController {
    private final OrderKafkaProducer orderKafkaProducer;
    private final ProductClient productClient;
 
+   // 주문 생성 API
    @PostMapping
    public String postMethodName(@RequestBody CreateOrderRequest request) {
 
@@ -42,7 +43,7 @@ public class OrderController {
       return  "✅ 주문 완료 (orderId = " + orderId + ")";
    }
    
-
+   // 상품 목록 조회 API (product-service 연동 테스트용)
    @GetMapping("/products")
    public List<ProductDto> getProductsFromProductService() {
       return this.productClient.getProducts();

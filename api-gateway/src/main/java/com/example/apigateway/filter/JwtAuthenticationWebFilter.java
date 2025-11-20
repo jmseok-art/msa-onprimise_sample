@@ -1,7 +1,5 @@
 package com.example.apigateway.filter;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
@@ -20,20 +18,20 @@ import org.springframework.web.server.WebFilterChain;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+
 import reactor.core.publisher.Mono;
 
 public class JwtAuthenticationWebFilter implements WebFilter{
 
     private PublicKey key;
 
-    public JwtAuthenticationWebFilter() {
-        makeKey();
+    public JwtAuthenticationWebFilter(String publicKey) {
+        makeKey(publicKey);
 
     }
 
-    private void makeKey() {
+    private void makeKey(String publicKey) {
         try {
-            String publicKey = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("public_key.pem").toURI())));
             publicKey = publicKey
                 .replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")
