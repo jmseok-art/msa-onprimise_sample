@@ -1,5 +1,8 @@
 package com.example.userservice.service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -10,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,18 +50,18 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(@Value("${jwt.expire-time.access-token}") long accessTokenExpireTime,
                       @Value("${jwt.expire-time.refresh-token}") long refreshTokenExpireTime,
-                      @Value("${KEY_PATH}") String privateKey,
+                      @Value("") Resource privateKey,
                       UserRepository userRepository,
                       RefreshTokenRepository refreshTokenRepository,
-                      PasswordEncoder passwordEncoder) {
+                      PasswordEncoder passwordEncoder) throws IOException {
         this.userRepository = userRepository;  
         this.passwordEncoder = passwordEncoder;
         this.refreshTokenRepository = refreshTokenRepository;                 
         this.ACCESS_TOKEN_EXPIRE_TIME = accessTokenExpireTime;
         this.REFRESH_TOKEN_EXPIRE_TIME = refreshTokenExpireTime;
-        makeKey(privateKey);
+        makeKey(new String(privateKey.getInputStream().readAllBytes()));
     }
-
+    
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findById(username)
