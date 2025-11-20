@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(@Value("${jwt.expire-time.access-token}") long accessTokenExpireTime,
                       @Value("${jwt.expire-time.refresh-token}") long refreshTokenExpireTime,
-                      @Value("${PREVATE_KEY}") String privateKey,
+                      @Value("${PRIVATE_KEY}") String privateKey,
                       UserRepository userRepository,
                       RefreshTokenRepository refreshTokenRepository,
                       PasswordEncoder passwordEncoder) throws IOException {
