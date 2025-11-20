@@ -1,8 +1,6 @@
 package com.example.userservice.service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -50,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(@Value("${jwt.expire-time.access-token}") long accessTokenExpireTime,
                       @Value("${jwt.expire-time.refresh-token}") long refreshTokenExpireTime,
-                      @Value("") Resource privateKey,
+                      @Value("file:/app/secret/private_key_pkcs8.pem") Resource privateKey,
                       UserRepository userRepository,
                       RefreshTokenRepository refreshTokenRepository,
                       PasswordEncoder passwordEncoder) throws IOException {
