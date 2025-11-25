@@ -14,8 +14,7 @@ jobs:
         service: [user-service, product-service, order-service]  # repo 내 서비스 목록
 
     env:
-      REGISTRY: docker.io/jeongmin0709
-      DEST: ${{ env.REGISTRY }}/${{ matrix.service }}:1.0.${{ github.run_number }}
+      DEST: docker.io/jeongmin0709/${{ matrix.service }}:1.0.${{ github.run_number }}
       
     steps:
       - uses: actions/checkout@v3
