@@ -47,7 +47,7 @@ jobs:
         uses: peter-evans/workflow-dispatch@v1
         with:
           workflow: helm-deploy.yml
-          repository: jeongmin0709/chart
+          repository: /jmseok-art/chart
           ref: main
           token: ${{ secrets.TARGET_REPO_PAT }}
           inputs: |
