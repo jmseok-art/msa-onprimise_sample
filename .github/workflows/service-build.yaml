@@ -44,10 +44,8 @@ jobs:
         run: docker push $DEST
 
       - name: Trigger Helm Deploy
-        if: steps.changed.outputs.changed == 'true'
-        run: |
-          curl -X POST https://api.github.com/repos/jmseok-art/chart/dispatches \
-          -H 'Accept: application/vnd.github.v3+json' \
-          -u ${{ secrets.ACCESS_TOKEN }} \
-          -d '{"event_type": "HELM_PUSH", "client_payload": { "service": "'"${{ matrix.service }}"'", "tag": "'"${{ github.run_number }}"'" }}'
-
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.PAT }}
+          repository: jmseok-art/chart/
+          event-type: HELM-PUSH
