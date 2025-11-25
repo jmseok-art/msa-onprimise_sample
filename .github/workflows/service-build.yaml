@@ -44,13 +44,9 @@ jobs:
         run: docker push $DEST
 
       - name: Trigger Helm Deploy
-        uses: peter-evans/workflow-dispatch@v1
-        with:
-          workflow: helm-deploy.yml
-          repository: /jmseok-art/chart
-          ref: main
-          token: ${{ secrets.TARGET_REPO_PAT }}
-          inputs: |
-            SERVICE= ${{ matrix.service }}
-            TAG=1.0.${{ github.run_number }}
+        run: |
+          curl -X POST https://api.github.com/repos/jmseok-art/chart/dispatches \
+          -H 'Accept: application/vnd.github.v3+json' \
+          -u ${{ secrets.ACCESS_TOKEN }} \
+          -d '{"event_type": "HELM_PUSH", "client_payload": { "service": "'"${{ matrix.service }}"'", "tag": "'"${{ github.run_number }}"'" }}'
 
