@@ -21,7 +21,7 @@ import io.jsonwebtoken.Jwts;
 
 import reactor.core.publisher.Mono;
 
-// JWT 인증을 처리하는 WebFilter
+// JWT 인증을 처리하는 WebFilter이다
 public class JwtAuthenticationWebFilter implements WebFilter{
 
     private PublicKey key;
