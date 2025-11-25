@@ -44,7 +44,7 @@ jobs:
         run: docker push $DEST
 
       - name: Trigger Helm Deploy
-        if: steps.changed.outputs.changed == 'true'
+        #if: steps.changed.outputs.changed == 'true'
         uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.PAT }}
