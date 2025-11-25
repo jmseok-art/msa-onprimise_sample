@@ -47,8 +47,9 @@ jobs:
         uses: peter-evans/workflow-dispatch@v1
         with:
           workflow: helm-deploy.yml
-          repository: ${{ github.repository }}
+          repository: jeongmin0709/chart
           ref: main
+          token: ${{ secrets.TARGET_REPO_PAT }}
           inputs: |
             SERVICE= ${{ matrix.service }}
             TAG=1.0.${{ github.run_number }}
