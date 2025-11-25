@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [user-service, product-service, order-service]  # repo 내 서비스 목록
+        service: [api-gateway, user-service, product-service, order-service]  # repo 내 서비스 목록
 
     env:
       DEST: docker.io/jeongmin0709/${{ matrix.service }}:1.0.${{ github.run_number }}
