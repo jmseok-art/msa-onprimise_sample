@@ -49,3 +49,4 @@ jobs:
           token: ${{ secrets.PAT }}
           repository: jmseok-art/chart/
           event-type: HELM-PUSH
+          client-payload: '{"service": "${{ matrix.service }}", "tag": "${{ github.run_number }}"}'
