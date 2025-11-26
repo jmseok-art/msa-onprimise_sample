@@ -14,9 +14,12 @@ import org.springframework.security.web.server.context.NoOpServerSecurityContext
 
 import com.example.apigateway.filter.JwtAuthenticationWebFilter;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Configuration
 @EnableWebFluxSecurity
+@Slf4j
 public class SecurityConfig {
     
     private final ServerAuthenticationEntryPoint authenticationEntryPoint;
@@ -26,6 +29,9 @@ public class SecurityConfig {
     public SecurityConfig(@Value("${PUBLIC_KEY}") String publicKey,
         ServerAuthenticationEntryPoint authenticationEntryPoint,
         ServerAccessDeniedHandler accessDeniedHandler) {
+
+        log.info("Public Key: {}", publicKey);
+
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
         this.publicKey = publicKey;
