@@ -26,7 +26,7 @@ public class OrderController {
    private final OrderKafkaProducer orderKafkaProducer;
    private final ProductClient productClient;
 
-   // 주문 생성 API
+   // 주문 생성 API 요청
    @PostMapping
    public String postMethodName(@RequestBody CreateOrderRequest request) {
 
